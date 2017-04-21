@@ -56,7 +56,7 @@ public class MCompanyModel {
 		for (Object object2 : Info.keySet()) {
 			comp.eq(object2.toString(), Info.get(object2.toString()));
 		}
-		return comp.select();
+		return comp.limit(20).select();
 	}
 
 	@SuppressWarnings("unchecked")
