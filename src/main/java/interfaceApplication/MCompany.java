@@ -25,9 +25,9 @@ public class MCompany {
 	}
 
 	@SuppressWarnings("unchecked")
-	public String AddComp(String compInfo) {
+	public String AddComp(String username,String compInfo) {
 		JSONObject object = model.AddMap(map, JSONHelper.string2json(compInfo));
-		_obj.put("records", JSONHelper.string2json(model.addComp(object)));
+		_obj.put("records", JSONHelper.string2json(model.addComp(username,object)));
 		return model.resultMessage(0, _obj.toString());
 	}
 

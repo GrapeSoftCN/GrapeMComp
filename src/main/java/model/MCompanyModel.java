@@ -14,6 +14,7 @@ import esayhelper.DBHelper;
 import esayhelper.formHelper;
 import esayhelper.jGrapeFW_Message;
 import esayhelper.formHelper.formdef;
+import rpc.execRequest;
 
 public class MCompanyModel {
 	private static DBHelper comp;
@@ -28,7 +29,17 @@ public class MCompanyModel {
 		form.putRule("companyName", formdef.notNull);
 	}
 
-	public String addComp(JSONObject object) {
+	/**\
+	 * 新增操作，带权限验证
+	 * @param username
+	 * @param object
+	 * @return
+	 */
+	public String addComp(String username,JSONObject object) {
+		String code = execRequest._run("GrapeAuth/Auth/Add/s:"+username, null).toString();
+		if (code.equals("99")) {
+			return resultMessage(2, "");
+		}
 		if (!form.checkRuleEx(object)) {
 			return resultMessage(1, ""); // 必填字段没有填
 		}
@@ -60,14 +71,14 @@ public class MCompanyModel {
 	}
 
 	@SuppressWarnings("unchecked")
-	public JSONObject page(int idx, int pageSize) {
+	public String page(int idx, int pageSize) {
 		JSONArray array = comp.page(idx, pageSize);
 		JSONObject object = new JSONObject();
 		object.put("totalSize", (int) Math.ceil((double) comp.count() / pageSize));
 		object.put("currentPage", idx);
 		object.put("pageSize", pageSize);
 		object.put("data", array);
-		return object;
+		return object.toJSONString();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -126,6 +137,9 @@ public class MCompanyModel {
 			break;
 		case 1:
 			msg = "必填项没有填";
+			break;
+		case 2:
+			msg = "没有创建数据权限，请联系管理员进行权限调整";
 			break;
 		default:
 			msg = "其它异常";
