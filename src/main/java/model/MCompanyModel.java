@@ -14,7 +14,6 @@ import esayhelper.DBHelper;
 import esayhelper.formHelper;
 import esayhelper.jGrapeFW_Message;
 import esayhelper.formHelper.formdef;
-import rpc.execRequest;
 
 public class MCompanyModel {
 	private static DBHelper comp;
@@ -35,14 +34,23 @@ public class MCompanyModel {
 	 * @param object
 	 * @return
 	 */
-	public String addComp(String username,JSONObject object) {
-		String code = execRequest._run("GrapeAuth/Auth/Add/s:"+username, null).toString();
-		if (code.equals("99")) {
-			return resultMessage(2, "");
-		}
+	public String addComp(HashMap<String, Object> map,JSONObject object) {
 		if (!form.checkRuleEx(object)) {
 			return resultMessage(1, ""); // 必填字段没有填
 		}
+		if (object.containsKey("companyEmail")) {
+			form.putRule("companyEmail", formdef.email);
+			if (!form.checkRule(object)) {
+				return resultMessage(2, ""); //邮箱格式不正确
+			}
+		}
+		if (object.containsKey("companyMob")) {
+			form.putRule("companyMob", formdef.mobile);
+			if (!form.checkRule(object)) {
+				return resultMessage(3, ""); //手机号格式不正确
+			}
+		}
+		object = AddMap(map, object);
 		String info = comp.data(object).insertOnce().toString();
 		return FindcomByID(info).toString();
 	}
@@ -55,9 +63,14 @@ public class MCompanyModel {
 		return comp.eq("_id", new ObjectId(mid)).delete() != null ? 0 : 99;
 	}
 
-	public int deleteCompe(String[] mids) {
+	public int deleteCompe(String[] mids,int userplv) {
 		comp = (DBHelper) comp.or();
+//		int dplv=0;
 		for (int i = 0; i < mids.length; i++) {
+//			dplv = Integer.parseInt(FindcomByID(mids[i]).get("dplv").toString());
+//			if (userplv<dplv) {
+//				continue;
+//			}
 			comp.eq("_id", new ObjectId(mids[i]));
 		}
 		return comp.delete() != null ? 0 : 99;
@@ -99,10 +112,15 @@ public class MCompanyModel {
 		return comp.eq("_id", new ObjectId(mid)).find();
 	}
 
-	public JSONObject FindcomBytype(int type) {
-		return comp.eq("type", type).find();
-	}
-
+//	@SuppressWarnings("unchecked")
+//	public JSONObject getPLV(String mid) {
+//		JSONObject object = FindcomByID(mid);
+//		JSONObject _oObject = new JSONObject();
+//		_oObject.put("update", object.get("uPlv").toString());
+//		_oObject.put("delete", object.get("dPlv").toString());
+//		_oObject.put("read", object.get("rPlv").toString());
+//		return _oObject;
+//	}
 	public String getID() {
 		String str = UUID.randomUUID().toString();
 		return str.replace("-", "");
@@ -139,7 +157,19 @@ public class MCompanyModel {
 			msg = "必填项没有填";
 			break;
 		case 2:
+			msg = "邮箱格式不正确";
+			break;
+		case 3:
+			msg = "手机号格式不正确";
+			break;
+		case 4:
 			msg = "没有创建数据权限，请联系管理员进行权限调整";
+			break;
+		case 5:
+			msg = "没有修改数据权限，请联系管理员进行权限调整";
+			break;
+		case 6:
+			msg = "没有删除数据权限，请联系管理员进行权限调整";
 			break;
 		default:
 			msg = "其它异常";
