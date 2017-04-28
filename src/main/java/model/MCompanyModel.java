@@ -73,7 +73,7 @@ public class MCompanyModel {
 //			}
 			comp.eq("_id", new ObjectId(mids[i]));
 		}
-		return comp.delete() != null ? 0 : 99;
+		return comp.deleteAll() != mids.length ? 0 : 99;
 	}
 
 	public JSONArray find(JSONObject Info) {

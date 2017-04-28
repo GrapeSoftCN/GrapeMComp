@@ -12,10 +12,10 @@ public class MCompany {
 	private MCompanyModel model = new MCompanyModel();
 	private HashMap<String, Object> map = new HashMap<>();
 	private JSONObject _obj = new JSONObject();
-	private static int userPlv;
-	static{
-		userPlv = Integer.parseInt(execRequest._run("GrapeAuth/Auth/getUserPlv", null).toString());
-	}
+//	private static int userPlv;
+//	static{
+//		userPlv = Integer.parseInt(execRequest._run("GrapeAuth/Auth/getUserPlv", null).toString());
+//	}
 	public MCompany() {
 		map.put("companyDesp", "");
 		map.put("companyURL", "");
@@ -58,9 +58,9 @@ public class MCompany {
 		return model.resultMessage(model.deleteComp(cid), "维护单位信息删除成功");
 	}
 
-	public String DeleteBatchComp(String cid) {
-		return model.resultMessage(model.deleteCompe(cid.split(","),userPlv), "批量删除成功");
-	}
+//	public String DeleteBatchComp(String cid) {
+//		return model.resultMessage(model.deleteCompe(cid.split(","),userPlv), "批量删除成功");
+//	}
 
 	@SuppressWarnings("unchecked")
 	public String SearchComp(String Info) {
