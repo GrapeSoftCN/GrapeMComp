@@ -63,7 +63,7 @@ public class MCompanyModel {
 		return comp.eq("_id", new ObjectId(mid)).delete() != null ? 0 : 99;
 	}
 
-	public int deleteCompe(String[] mids,int userplv) {
+	public int deleteCompe(String[] mids) {
 		comp = (DBHelper) comp.or();
 //		int dplv=0;
 		for (int i = 0; i < mids.length; i++) {
@@ -73,7 +73,7 @@ public class MCompanyModel {
 //			}
 			comp.eq("_id", new ObjectId(mids[i]));
 		}
-		return comp.deleteAll() != mids.length ? 0 : 99;
+		return comp.deleteAll() == mids.length ? 0 : 99;
 	}
 
 	public JSONArray find(JSONObject Info) {
