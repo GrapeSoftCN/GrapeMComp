@@ -18,6 +18,7 @@ import esayhelper.formHelper.formdef;
 public class MCompanyModel {
 	private static DBHelper comp;
 	private static formHelper form;
+	private JSONObject _obj = new JSONObject();
 
 	static {
 		comp = new DBHelper("mongodb", "ManageComp");
@@ -28,26 +29,27 @@ public class MCompanyModel {
 		form.putRule("companyName", formdef.notNull);
 	}
 
-	/**\
-	 * 新增操作，带权限验证
+	/**
+	 * \ 新增操作，带权限验证
+	 * 
 	 * @param username
 	 * @param object
 	 * @return
 	 */
-	public String addComp(HashMap<String, Object> map,JSONObject object) {
+	public String addComp(HashMap<String, Object> map, JSONObject object) {
 		if (!form.checkRuleEx(object)) {
 			return resultMessage(1, ""); // 必填字段没有填
 		}
 		if (object.containsKey("companyEmail")) {
 			form.putRule("companyEmail", formdef.email);
 			if (!form.checkRule(object)) {
-				return resultMessage(2, ""); //邮箱格式不正确
+				return resultMessage(2, ""); // 邮箱格式不正确
 			}
 		}
 		if (object.containsKey("companyMob")) {
 			form.putRule("companyMob", formdef.mobile);
 			if (!form.checkRule(object)) {
-				return resultMessage(3, ""); //手机号格式不正确
+				return resultMessage(3, ""); // 手机号格式不正确
 			}
 		}
 		object = AddMap(map, object);
@@ -56,7 +58,8 @@ public class MCompanyModel {
 	}
 
 	public int updateComp(String mid, JSONObject object) {
-		return comp.eq("_id", new ObjectId(mid)).data(object).update() != null ? 0 : 99;
+		return comp.eq("_id", new ObjectId(mid)).data(object).update() != null
+				? 0 : 99;
 	}
 
 	public int deleteComp(String mid) {
@@ -65,12 +68,7 @@ public class MCompanyModel {
 
 	public int deleteCompe(String[] mids) {
 		comp = (DBHelper) comp.or();
-//		int dplv=0;
 		for (int i = 0; i < mids.length; i++) {
-//			dplv = Integer.parseInt(FindcomByID(mids[i]).get("dplv").toString());
-//			if (userplv<dplv) {
-//				continue;
-//			}
 			comp.eq("_id", new ObjectId(mids[i]));
 		}
 		return comp.deleteAll() == mids.length ? 0 : 99;
@@ -84,14 +82,15 @@ public class MCompanyModel {
 	}
 
 	@SuppressWarnings("unchecked")
-	public String page(int idx, int pageSize) {
+	public JSONObject page(int idx, int pageSize) {
 		JSONArray array = comp.page(idx, pageSize);
 		JSONObject object = new JSONObject();
-		object.put("totalSize", (int) Math.ceil((double) comp.count() / pageSize));
+		object.put("totalSize",
+				(int) Math.ceil((double) comp.count() / pageSize));
 		object.put("currentPage", idx);
 		object.put("pageSize", pageSize);
 		object.put("data", array);
-		return object.toJSONString();
+		return object;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -101,7 +100,8 @@ public class MCompanyModel {
 		}
 		JSONArray array = comp.page(idx, pageSize);
 		JSONObject object = new JSONObject();
-		object.put("totalSize", (int) Math.ceil((double) comp.count() / pageSize));
+		object.put("totalSize",
+				(int) Math.ceil((double) comp.count() / pageSize));
 		object.put("currentPage", idx);
 		object.put("pageSize", pageSize);
 		object.put("data", array);
@@ -112,15 +112,6 @@ public class MCompanyModel {
 		return comp.eq("_id", new ObjectId(mid)).find();
 	}
 
-//	@SuppressWarnings("unchecked")
-//	public JSONObject getPLV(String mid) {
-//		JSONObject object = FindcomByID(mid);
-//		JSONObject _oObject = new JSONObject();
-//		_oObject.put("update", object.get("uPlv").toString());
-//		_oObject.put("delete", object.get("dPlv").toString());
-//		_oObject.put("read", object.get("rPlv").toString());
-//		return _oObject;
-//	}
 	public String getID() {
 		String str = UUID.randomUUID().toString();
 		return str.replace("-", "");
@@ -136,15 +127,29 @@ public class MCompanyModel {
 	@SuppressWarnings("unchecked")
 	public JSONObject AddMap(HashMap<String, Object> map, JSONObject object) {
 		if (map.entrySet() != null) {
-			Iterator<Entry<String, Object>> iterator = map.entrySet().iterator();
+			Iterator<Entry<String, Object>> iterator = map.entrySet()
+					.iterator();
 			while (iterator.hasNext()) {
-				Map.Entry<String, Object> entry = (Map.Entry<String, Object>) iterator.next();
+				Map.Entry<String, Object> entry = (Map.Entry<String, Object>) iterator
+						.next();
 				if (!object.containsKey(entry.getKey())) {
 					object.put(entry.getKey(), entry.getValue());
 				}
 			}
 		}
 		return object;
+	}
+
+	@SuppressWarnings("unchecked")
+	public String resultMessage(JSONObject object) {
+		_obj.put("records", object);
+		return resultMessage(0, _obj.toString());
+	}
+
+	@SuppressWarnings("unchecked")
+	public String resultMessage(JSONArray array) {
+		_obj.put("records", array);
+		return resultMessage(0, _obj.toString());
 	}
 
 	public String resultMessage(int num, String message) {
