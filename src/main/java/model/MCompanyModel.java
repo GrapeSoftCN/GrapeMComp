@@ -10,6 +10,7 @@ import org.bson.types.ObjectId;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import apps.appsProxy;
 import esayhelper.DBHelper;
 import esayhelper.formHelper;
 import esayhelper.jGrapeFW_Message;
@@ -21,6 +22,8 @@ public class MCompanyModel {
 	private JSONObject _obj = new JSONObject();
 
 	static {
+//		comp = new DBHelper(appsProxy.configValue().get("db").toString(),
+//				"ManageComp");
 		comp = new DBHelper("mongodb", "ManageComp");
 		form = comp.getChecker();
 	}
@@ -76,6 +79,9 @@ public class MCompanyModel {
 
 	public JSONArray find(JSONObject Info) {
 		for (Object object2 : Info.keySet()) {
+			if ("_id".equals(object2.toString())) {
+				comp.eq("_id", new ObjectId(Info.get("_id").toString()));
+			}
 			comp.eq(object2.toString(), Info.get(object2.toString()));
 		}
 		return comp.limit(20).select();
@@ -94,11 +100,14 @@ public class MCompanyModel {
 	}
 
 	@SuppressWarnings("unchecked")
-	public JSONObject page(int idx, int pageSize, JSONObject fileInfo) {
-		for (Object object2 : fileInfo.keySet()) {
-			comp.eq(object2.toString(), fileInfo.get(object2.toString()));
+	public JSONObject page(int idx, int pageSize, JSONObject Info) {
+		for (Object object2 : Info.keySet()) {
+			if ("_id".equals(object2.toString())) {
+				comp.eq("_id", new ObjectId(Info.get("_id").toString()));
+			}
+			comp.eq(object2.toString(), Info.get(object2.toString()));
 		}
-		JSONArray array = comp.page(idx, pageSize);
+		JSONArray array = comp.dirty().page(idx, pageSize);
 		JSONObject object = new JSONObject();
 		object.put("totalSize",
 				(int) Math.ceil((double) comp.count() / pageSize));

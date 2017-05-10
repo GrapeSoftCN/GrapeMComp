@@ -4,7 +4,6 @@ import java.util.HashMap;
 
 import esayhelper.JSONHelper;
 import model.MCompanyModel;
-import rpc.execRequest;
 
 public class MCompany {
 	private MCompanyModel model = new MCompanyModel();
