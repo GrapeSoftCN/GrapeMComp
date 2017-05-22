@@ -8,10 +8,8 @@ import model.MCompanyModel;
 public class MCompany {
 	private MCompanyModel model = new MCompanyModel();
 	private HashMap<String, Object> map = new HashMap<>();
-//	private String userid;
 
 	public MCompany() {
-//		userid = execRequest.getChannelValue("Userid").toString();
 
 		map.put("companyDesp", "");
 		map.put("companyURL", "");

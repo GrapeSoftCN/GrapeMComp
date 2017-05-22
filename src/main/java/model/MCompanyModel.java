@@ -11,6 +11,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import apps.appsProxy;
+import database.db;
 import esayhelper.DBHelper;
 import esayhelper.formHelper;
 import esayhelper.jGrapeFW_Message;
@@ -22,9 +23,8 @@ public class MCompanyModel {
 	private JSONObject _obj = new JSONObject();
 
 	static {
-//		comp = new DBHelper(appsProxy.configValue().get("db").toString(),
-//				"ManageComp");
-		comp = new DBHelper("mongodb", "ManageComp");
+		comp = new DBHelper(appsProxy.configValue().get("db").toString(),
+				"ManageComp");
 		form = comp.getChecker();
 	}
 
@@ -32,6 +32,9 @@ public class MCompanyModel {
 		form.putRule("companyName", formdef.notNull);
 	}
 
+	private db bind(){
+		return comp.bind(String.valueOf(appsProxy.appid()));
+	}
 	/**
 	 * \ 新增操作，带权限验证
 	 * 
@@ -56,43 +59,43 @@ public class MCompanyModel {
 			}
 		}
 		object = AddMap(map, object);
-		String info = comp.data(object).insertOnce().toString();
+		String info = bind().data(object).insertOnce().toString();
 		return FindcomByID(info).toString();
 	}
 
 	public int updateComp(String mid, JSONObject object) {
-		return comp.eq("_id", new ObjectId(mid)).data(object).update() != null
+		return bind().eq("_id", new ObjectId(mid)).data(object).update() != null
 				? 0 : 99;
 	}
 
 	public int deleteComp(String mid) {
-		return comp.eq("_id", new ObjectId(mid)).delete() != null ? 0 : 99;
+		return bind().eq("_id", new ObjectId(mid)).delete() != null ? 0 : 99;
 	}
 
 	public int deleteCompe(String[] mids) {
-		comp = (DBHelper) comp.or();
+		bind().or();
 		for (int i = 0; i < mids.length; i++) {
-			comp.eq("_id", new ObjectId(mids[i]));
+			bind().eq("_id", new ObjectId(mids[i]));
 		}
-		return comp.deleteAll() == mids.length ? 0 : 99;
+		return bind().deleteAll() == mids.length ? 0 : 99;
 	}
 
 	public JSONArray find(JSONObject Info) {
 		for (Object object2 : Info.keySet()) {
 			if ("_id".equals(object2.toString())) {
-				comp.eq("_id", new ObjectId(Info.get("_id").toString()));
+				bind().eq("_id", new ObjectId(Info.get("_id").toString()));
 			}
-			comp.eq(object2.toString(), Info.get(object2.toString()));
+			bind().eq(object2.toString(), Info.get(object2.toString()));
 		}
-		return comp.limit(20).select();
+		return bind().limit(20).select();
 	}
 
 	@SuppressWarnings("unchecked")
 	public JSONObject page(int idx, int pageSize) {
-		JSONArray array = comp.page(idx, pageSize);
+		JSONArray array = bind().page(idx, pageSize);
 		JSONObject object = new JSONObject();
 		object.put("totalSize",
-				(int) Math.ceil((double) comp.count() / pageSize));
+				(int) Math.ceil((double) bind().count() / pageSize));
 		object.put("currentPage", idx);
 		object.put("pageSize", pageSize);
 		object.put("data", array);
@@ -103,14 +106,14 @@ public class MCompanyModel {
 	public JSONObject page(int idx, int pageSize, JSONObject Info) {
 		for (Object object2 : Info.keySet()) {
 			if ("_id".equals(object2.toString())) {
-				comp.eq("_id", new ObjectId(Info.get("_id").toString()));
+				bind().eq("_id", new ObjectId(Info.get("_id").toString()));
 			}
-			comp.eq(object2.toString(), Info.get(object2.toString()));
+			bind().eq(object2.toString(), Info.get(object2.toString()));
 		}
-		JSONArray array = comp.dirty().page(idx, pageSize);
+		JSONArray array = bind().dirty().page(idx, pageSize);
 		JSONObject object = new JSONObject();
 		object.put("totalSize",
-				(int) Math.ceil((double) comp.count() / pageSize));
+				(int) Math.ceil((double) bind().count() / pageSize));
 		object.put("currentPage", idx);
 		object.put("pageSize", pageSize);
 		object.put("data", array);
@@ -118,7 +121,7 @@ public class MCompanyModel {
 	}
 
 	public JSONObject FindcomByID(String mid) {
-		return comp.eq("_id", new ObjectId(mid)).find();
+		return bind().eq("_id", new ObjectId(mid)).find();
 	}
 
 	public String getID() {
