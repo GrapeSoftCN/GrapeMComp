@@ -2,7 +2,7 @@ package interfaceApplication;
 
 import java.util.HashMap;
 
-import esayhelper.JSONHelper;
+import json.JSONHelper;
 import model.MCompanyModel;
 
 public class MCompany {
@@ -26,35 +26,14 @@ public class MCompany {
 	}
 
 	public String AddComp(String compInfo) {
-		// String tip = execRequest
-		// ._run("GrapeAuth/Auth/InsertPLV/s:" + userid, null).toString();
-		// if (!"0".equals(tip)) {
-		// return model.resultMessage(4, "");
-		// }
 		return model.addComp(model.AddMap(map, JSONHelper.string2json(compInfo)));
 	}
 
 	public String updateComp(String cid, String comInfo) {
-		// String uPLV = model.FindcomByID(cid).get("uplv").toString();
-		// String tip = execRequest
-		// ._run("GrapeAuth/Auth/UpdatePLV/s:" + uPLV + "/s:" + userid,
-		// null)
-		// .toString();
-		// if (!"0".equals(tip)) {
-		// return model.resultMessage(4, "没有编辑权限");
-		// }
 		return model.updateComp(cid, JSONHelper.string2json(comInfo));
 	}
 
 	public String DeleteComp(String cid) {
-		// String uPLV = model.FindcomByID(cid).get("uplv").toString();
-		// String tip = execRequest
-		// ._run("GrapeAuth/Auth/UpdatePLV/s:" + uPLV + "/s:" + userid,
-		// null)
-		// .toString();
-		// if (!"0".equals(tip)) {
-		// return model.resultMessage(4, "没有编辑权限");
-		// }
 		return model.deleteComp(cid);
 	}
 

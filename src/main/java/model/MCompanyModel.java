@@ -10,12 +10,12 @@ import org.bson.types.ObjectId;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import JGrapeSystem.jGrapeFW_Message;
 import apps.appsProxy;
 import check.formHelper;
 import check.formHelper.formdef;
 import database.DBHelper;
 import database.db;
-import esayhelper.jGrapeFW_Message;
 import nlogger.nlogger;
 
 public class MCompanyModel {
@@ -142,12 +142,15 @@ public class MCompanyModel {
 					JSONArray array = bind().dirty().page(idx, pageSize);
 					object = new JSONObject();
 					object.put("totalSize", (int) Math.ceil((double) bind().count() / pageSize));
+					
 					object.put("currentPage", idx);
 					object.put("pageSize", pageSize);
 					object.put("data", array);
 				} catch (Exception e) {
 					nlogger.logout(e);
 					object = null;
+				} finally {
+					bind().clear();
 				}
 			}
 		}
