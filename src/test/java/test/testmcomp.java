@@ -1,7 +1,6 @@
 package test;
 
 import httpServer.booter;
-import interfaceApplication.MCompany;
 
 public class testmcomp {
 	public static void main(String[] args) {

@@ -3,8 +3,8 @@ package model;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.UUID;
 import java.util.Map.Entry;
+import java.util.UUID;
 
 import org.bson.types.ObjectId;
 import org.json.simple.JSONArray;
@@ -19,16 +19,13 @@ import database.db;
 import nlogger.nlogger;
 
 public class MCompanyModel {
-	private static DBHelper comp;
-	private static formHelper form;
+	private DBHelper comp;
+	private formHelper form;
 	private JSONObject _obj = new JSONObject();
 
-	static {
+	public MCompanyModel() {
 		comp = new DBHelper(appsProxy.configValue().get("db").toString(), "ManageComp");
 		form = comp.getChecker();
-	}
-
-	public MCompanyModel() {
 		form.putRule("companyName", formdef.notNull);
 		form.putRule("companyEmail", formdef.email);
 		form.putRule("companyMob", formdef.mobile);
